@@ -1,0 +1,26 @@
+name: WorkBuddy Daily Check-in
+
+on:
+  schedule:
+    # 每天 UTC 时间 01:00（即北京时间早上 09:00）自动运行
+    - cron: '0 1 * * *'
+  workflow_dispatch: # 支持在 GitHub 网页上手动点击一键运行
+
+jobs:
+  run-checkin:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Check-in Script
+        env:
+          WB_TOKEN: ${{ secrets.WB_TOKEN }}
+          WB_UID: ${{ secrets.WB_UID }}
+        run: |
+          python checkin.py
