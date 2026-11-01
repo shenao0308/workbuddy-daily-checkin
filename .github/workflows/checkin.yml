@@ -24,24 +24,3 @@ jobs:
           WB_UID: ${{ secrets.WB_UID }}
         run: |
           python checkin.py
-
-      - name: Notify Telegram
-        if: always()
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: |
-          if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
-            echo "::error::TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID must be configured"
-            exit 1
-          fi
-
-          status="${{ job.status }}"
-          message="WorkBuddy Daily Check-in: ${status}
-查看运行记录: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-
-          curl --fail --silent --show-error \
-            --request POST \
-            --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
-            --data-urlencode "text=${message}" \
-            "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage"
